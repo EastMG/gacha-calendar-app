@@ -1,0 +1,14 @@
+{
+  "name": "@gacha/core-bridge",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "gacha-calendar-core 的平台适配层：transport / storage / engine 门面（零框架依赖）",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "files": ["src"],
+  "license": "MIT"
+}

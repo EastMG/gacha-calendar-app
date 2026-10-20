@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "rootDir": ".",
+    "outDir": "build",
+    "sourceMap": true,
+    "declaration": false
+  },
+  "include": ["packages/*/src/**/*.ts", "apps/preview/src/**/*.ts"]
+}

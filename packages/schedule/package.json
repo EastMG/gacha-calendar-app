@@ -1,0 +1,16 @@
+{
+  "name": "@gacha/schedule",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "把 gacha-calendar-core 输出的展示串派生成结构化排期（零依赖、不依赖 Intl）",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "files": [
+    "src"
+  ],
+  "license": "MIT"
+}

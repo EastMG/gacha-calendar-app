@@ -1,0 +1,34 @@
+{
+  "name": "gacha-calendar-app",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "二游卡池/活动日历 App（Android / iOS / HarmonyOS）—— 可验证的共享核心层 + 浏览器预览",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EastMG/gacha-calendar-app.git"
+  },
+  "homepage": "https://github.com/EastMG/gacha-calendar-app",
+  "bugs": {
+    "url": "https://github.com/EastMG/gacha-calendar-app/issues"
+  },
+  "engines": {
+    "node": ">=22.6"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --test-isolation=none",
+    "dev": "node tools/preview-server.mjs",
+    "preview": "npm run build && npm run dev",
+    "check": "npm run typecheck && npm run build && npm run test"
+  },
+  "dependencies": {
+    "gacha-calendar-core": "0.12.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.3"
+  }
+}

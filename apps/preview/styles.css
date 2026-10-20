@@ -1,0 +1,560 @@
+/* 二游日历 · 预览样式
+   移动优先；桌面端套一个手机框，方便直接看移动端版式。 */
+
+:root {
+  --bg: #07090e;
+  --surface: #12161f;
+  --surface-2: #1a2030;
+  --surface-3: #232a3d;
+  --line: #262e42;
+  --text: #e9edf6;
+  --muted: #8b95ad;
+  --dim: #5f6a80;
+  --accent: #7c5cff;
+  --accent-soft: rgba(124, 92, 255, 0.16);
+  --danger: #ff5c7c;
+  --danger-soft: rgba(255, 92, 124, 0.14);
+  --warn: #ffb020;
+  --warn-soft: rgba(255, 176, 32, 0.14);
+  --ok: #35d39a;
+  --ok-soft: rgba(53, 211, 154, 0.14);
+  --radius: 14px;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.5 system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+
+/* ── 手机框 ───────────────────────────────────────────── */
+.app {
+  width: 100%;
+  max-width: 430px;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 560px) {
+  body {
+    align-items: center;
+    padding: 24px 0;
+  }
+  .app {
+    height: min(880px, calc(100dvh - 48px));
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6), 0 0 0 8px #0d1018;
+  }
+}
+
+/* ── 顶栏 ─────────────────────────────────────────────── */
+.topbar {
+  padding: 18px 16px 12px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, #161b26, var(--surface));
+  flex: none;
+}
+
+.topbar-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.brand {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.brand .tag {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 999px;
+  padding: 2px 8px;
+  margin-left: 8px;
+  vertical-align: 2px;
+}
+
+.meta {
+  margin-top: 6px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ok);
+  display: inline-block;
+}
+.dot.snapshot {
+  background: var(--warn);
+}
+.dot.live {
+  background: var(--ok);
+}
+
+.btn {
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 7px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.btn:hover {
+  background: var(--surface-3);
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn[disabled] {
+  opacity: 0.5;
+  cursor: default;
+}
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* ── 主区域 ───────────────────────────────────────────── */
+.view {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 12px 12px 24px;
+  scrollbar-width: thin;
+}
+
+.section {
+  margin-bottom: 18px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 2px 8px;
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.section-count {
+  font-size: 11px;
+  color: var(--dim);
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 1px 7px;
+}
+
+.section-title.ending {
+  color: var(--danger);
+}
+.section-title.upcoming {
+  color: var(--warn);
+}
+
+.hint {
+  color: var(--dim);
+  font-size: 12px;
+  padding: 10px 4px;
+}
+
+/* ── 事件卡片 ─────────────────────────────────────────── */
+.card {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 11px 12px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card.ending {
+  border-color: rgba(255, 92, 124, 0.4);
+  background: linear-gradient(180deg, var(--danger-soft), var(--surface-2) 60%);
+}
+
+.card.upcoming {
+  border-color: rgba(255, 176, 32, 0.28);
+}
+
+.card.detail {
+  opacity: 0.92;
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--muted);
+  min-width: 0;
+}
+
+.game-name {
+  color: var(--text);
+  font-weight: 600;
+  font-size: 12.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.badge {
+  font-size: 10.5px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  white-space: nowrap;
+  flex: none;
+}
+.badge.gacha {
+  color: #b9a6ff;
+  border-color: rgba(124, 92, 255, 0.4);
+  background: var(--accent-soft);
+}
+.badge.event {
+  color: #7fd6ff;
+  border-color: rgba(94, 190, 255, 0.32);
+  background: rgba(94, 190, 255, 0.12);
+}
+.badge.tz {
+  color: var(--dim);
+}
+.badge.stale {
+  color: var(--warn);
+  border-color: rgba(255, 176, 32, 0.35);
+}
+.badge.detail-src {
+  color: var(--dim);
+}
+
+.card-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.remain {
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+}
+.remain.urgent {
+  color: var(--danger);
+}
+.remain.soon {
+  color: var(--warn);
+}
+
+.progress {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.progress > i {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent), #a78bfa);
+}
+.card.ending .progress > i {
+  background: linear-gradient(90deg, var(--danger), #ff8fa3);
+}
+
+/* ── 日历 ─────────────────────────────────────────────── */
+.day-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 2px 6px;
+  position: sticky;
+  top: -12px;
+  background: linear-gradient(180deg, var(--surface) 70%, transparent);
+  z-index: 2;
+}
+.day-title {
+  font-size: 13px;
+  font-weight: 700;
+}
+.day-week {
+  font-size: 11px;
+  color: var(--dim);
+}
+.day-count {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--dim);
+}
+
+.cal-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  margin-bottom: 5px;
+  font-size: 12px;
+}
+.cal-row .time {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  flex: none;
+  width: 42px;
+}
+.cal-row .name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cal-row .gname {
+  color: var(--dim);
+  font-size: 11px;
+  flex: none;
+  max-width: 96px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── 游戏列表 ─────────────────────────────────────────── */
+.game-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin-bottom: 7px;
+}
+
+.game-row .state {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: none;
+}
+.state.ok {
+  background: var(--ok);
+}
+.state.nomatch {
+  background: var(--warn);
+}
+.state.down {
+  background: var(--danger);
+}
+.state.empty {
+  background: var(--dim);
+}
+
+.game-row .body {
+  min-width: 0;
+  flex: 1;
+}
+.game-row .nm {
+  font-size: 13px;
+  font-weight: 600;
+}
+.game-row .cur {
+  font-size: 11.5px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.game-row .side {
+  font-size: 10.5px;
+  color: var(--dim);
+  text-align: right;
+  flex: none;
+}
+
+/* ── 数据页 ───────────────────────────────────────────── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.stat {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+.stat .n {
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.stat .k {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.kv {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 2px;
+  border-bottom: 1px dashed var(--line);
+  font-size: 12px;
+}
+.kv:last-child {
+  border-bottom: none;
+}
+.kv .k {
+  color: var(--muted);
+}
+.kv .v {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  word-break: break-all;
+}
+
+.fail-item {
+  font-size: 11.5px;
+  color: var(--muted);
+  padding: 6px 10px;
+  background: var(--danger-soft);
+  border: 1px solid rgba(255, 92, 124, 0.25);
+  border-radius: 8px;
+  margin-bottom: 5px;
+}
+
+.reminder {
+  font-size: 11.5px;
+  padding: 7px 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-bottom: 5px;
+}
+.reminder .t {
+  color: var(--accent);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 底部标签栏 ───────────────────────────────────────── */
+.tabbar {
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--line);
+  background: rgba(13, 16, 24, 0.96);
+  backdrop-filter: blur(12px);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.tab {
+  background: none;
+  border: none;
+  color: var(--dim);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 10px 0 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-family: inherit;
+}
+.tab .ico {
+  font-size: 17px;
+  line-height: 1;
+}
+.tab.active {
+  color: var(--accent);
+}
+
+/* ── 提示条 ───────────────────────────────────────────── */
+.banner-tip {
+  font-size: 11.5px;
+  color: var(--muted);
+  background: var(--surface-2);
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+.banner-tip.error {
+  color: #ffb3c1;
+  border-color: rgba(255, 92, 124, 0.35);
+  background: var(--danger-soft);
+}
+
+.spin {
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

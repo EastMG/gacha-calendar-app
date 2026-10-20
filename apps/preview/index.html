@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <title>二游日历 · 预览</title>
+    <link rel="stylesheet" href="/apps/preview/styles.css" />
+    <!--
+      core 是 ESM 单文件、零依赖。这里用 import map 把裸包名指到实际文件，
+      因此**不需要任何打包器**即可在浏览器里跑起来。
+    -->
+    <script type="importmap">
+      {
+        "imports": {
+          "gacha-calendar-core": "/vendor/core.mjs"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="app" class="app"></div>
+    <script type="module" src="/build/apps/preview/src/main.js"></script>
+  </body>
+</html>
