@@ -11,7 +11,7 @@
 
 1. **共享层的价值与壳无关。** `packages/*` 在两个候选方案里都能直接用，
    先把它做扎实，换壳不返工。
-2. **壳是最贵的一次性决策。** 它决定构建环境（JDK / Xcode / DevEco）、
+2. **壳是最贵的一次性决策。** 它决定构建环境（JDK / Xcode / DevEco；**iOS 侧不需要本地 Mac**，用 CI 的 macOS runner 构建，见 [`IOS-WITHOUT-MAC.md`](IOS-WITHOUT-MAC.md)）、
    通知实现、包体、上架路径，且迁移成本高。
 3. **有一个必须先验证的硬风险**（见文末 PoC 清单第 1 条），
    在没验证前选型等于赌。
@@ -102,7 +102,7 @@ import "react-native-url-polyfill/auto";   // Hermes 缺 URL
 
 ## 如果现在就要选
 
-- 想要**体验最好、愿投入构建环境**（JDK + Android SDK + Xcode + DevEco）→ **RN + RNOH**
+- 想要**体验最好、愿投入构建环境**（JDK + Android SDK + DevEco；iOS 用 CI 的 macOS runner，本地无需 Mac）→ **RN + RNOH**
 - 想要**最快上手、保真度优先、能接受 Web UI 与社区维护的鸿蒙层** → **Capacitor + hionic**
 - 只想先看看手机上的效果，不做商店分发 → 直接用本仓库的浏览器预览装成 PWA
 

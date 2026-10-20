@@ -47,6 +47,9 @@
 - [ ] 选定壳，接入 `createAppEngine({ http, storage, now })`
 - [ ] 三端时区自检（设备时区 `UTC` / `Asia/Tokyo` / `America/New_York` 零误差）
 - [ ] 首刷性能实测（Hermes 无 JIT 的风险项）
+- [ ] **iOS 构建链路**：GitHub Actions `macos-latest` + 签名 + TestFlight，
+      验证"本地没有 Mac 也能出包上测试"。playbook 见 [`IOS-WITHOUT-MAC.md`](IOS-WITHOUT-MAC.md)
+      —— 这条可以先于壳落地就搭，因为它只依赖工程结构，不依赖业务代码
 
 ## Phase 4 — 系统级能力（三端各自实现）
 

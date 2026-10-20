@@ -182,7 +182,7 @@ core 内部用 `Intl.DateTimeFormat({ timeZone })`。这在 Node/浏览器没问
 |---|---|---|
 | 浏览器（预览 / PWA） | ✅ 已上线 | https://eastmg.github.io/gacha-calendar-app/ |
 | Android | ⏳ 待定壳 | 需 JDK 17 + Android SDK |
-| iOS | ⏳ 待定壳 | 需 macOS + Xcode |
+| iOS | ⏳ 待定壳 | 需要 Xcode 构建，但**本地不必有 Mac**（用 CI 的 macOS runner），见 [iOS-WITHOUT-MAC](docs/IOS-WITHOUT-MAC.md) |
 | HarmonyOS NEXT | ⏳ 待定壳 | 需 DevEco Studio |
 | **Android 电视（遥控器）** | 📋 待办 | **大陆 AOSP 盒子，不是 Google Android TV**：无 GMS、走当贝/沙发管家分发、遥控器焦点交互；见 [ROADMAP Phase 7](docs/ROADMAP.md) |
 
@@ -201,6 +201,7 @@ core 内部用 `Intl.DateTimeFormat({ timeZone })`。这在 Node/浏览器没问
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) —— 分层、数据流、为什么这样切
 - [`docs/DATA-MODEL.md`](docs/DATA-MODEL.md) —— `ScheduleEvent` 模型、时区表、年份推断、实测数字
 - [`docs/PLATFORM-DECISION.md`](docs/PLATFORM-DECISION.md) —— 三端壳选型调研与待决事项
+- [`docs/IOS-WITHOUT-MAC.md`](docs/IOS-WITHOUT-MAC.md) —— 没有 Mac 时 iOS 能推进到哪、怎么构建与上架
 - [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md) —— 抓第三方游戏数据的上架风险与规避
 - [`docs/ROADMAP.md`](docs/ROADMAP.md) —— 分阶段计划
 - [`AGENTS.md`](AGENTS.md) —— 开发流程铁律
