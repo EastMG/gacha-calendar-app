@@ -31,7 +31,7 @@ npm run check
 
 1. `npm run typecheck` —— `tsc --noEmit`，零错误
 2. `npm run build` —— 编译到 `build/`（预览依赖它）
-3. `npm test` —— `node --test --test-isolation=none`，当前 **62 通过 / 0 失败**
+3. `npm test` —— `node --test --test-isolation=none`，当前 **68 通过 / 0 失败**
 
 > `--test-isolation=none` 不是随意加的：默认隔离模式会为每个测试文件起子进程，
 > 在受限环境（如沙箱）里会 `spawn EPERM`。进程内跑既快又不依赖子进程权限。

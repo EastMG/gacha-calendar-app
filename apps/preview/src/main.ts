@@ -6,20 +6,22 @@
  */
 import {
   createAppEngine,
-  createLocalStorage
+  createLocalStorage,
+  readGameColors
 } from "../../../packages/core-bridge/src/index.ts";
 import type { GameMetaLike, ResultLike } from "../../../packages/schedule/src/index.ts";
 import { createProxyHttpClient } from "./http-browser.ts";
+import { ICONS } from "./theme.ts";
 import { clear, h } from "./ui.ts";
 import { renderCalendar, renderData, renderGames, renderToday, renderTopbar, type ViewContext } from "./views.ts";
 
 type Tab = "today" | "calendar" | "games" | "data";
 
-const TABS: Array<{ id: Tab; label: string; icon: string }> = [
-  { id: "today", label: "今天", icon: "◉" },
-  { id: "calendar", label: "日程", icon: "▤" },
-  { id: "games", label: "游戏", icon: "▦" },
-  { id: "data", label: "数据", icon: "◍" }
+const TABS: Array<{ id: Tab; label: string }> = [
+  { id: "today", label: "今天" },
+  { id: "calendar", label: "日程" },
+  { id: "games", label: "游戏" },
+  { id: "data", label: "数据" }
 ];
 
 interface AppState {
@@ -30,6 +32,7 @@ interface AppState {
   refreshedAt: number | null;
   refreshing: boolean;
   error: string | null;
+  gameColors: Record<string, string>;
 }
 
 const state: AppState = {
@@ -39,17 +42,20 @@ const state: AppState = {
   source: "snapshot",
   refreshedAt: null,
   refreshing: false,
-  error: null
+  error: null,
+  gameColors: {}
 };
 
+/** 展开状态单独存：30 秒重画一次时不希望用户刚展开的卡又收回去 */
+const expanded = new Set<string>();
 const scrollMemory = new Map<Tab, number>();
 
+const storage = createLocalStorage();
 const { engine } = createAppEngine({
   http: createProxyHttpClient(),
-  storage: createLocalStorage()
+  storage
 });
 
-/** 读内置快照（离线也能看到完整版式） */
 async function loadSnapshot(): Promise<ResultLike & { refreshedAt: number }> {
   const response = await fetch("/__fixture");
   if (!response.ok) throw new Error(`快照不可用（HTTP ${response.status}）`);
@@ -60,7 +66,6 @@ function countOk(result: ResultLike): number {
   return Object.values(result.games ?? {}).filter((g) => g && (g.banner || g.event)).length;
 }
 
-/** 实时刷新：失败不影响已显示的快照，只把原因写进顶栏 */
 async function refresh(): Promise<void> {
   if (state.refreshing) return;
   state.refreshing = true;
@@ -68,8 +73,7 @@ async function refresh(): Promise<void> {
   render();
   try {
     const fresh = await engine.refresh();
-    const ok = countOk(fresh);
-    if (ok > 0) {
+    if (countOk(fresh) > 0) {
       state.result = fresh;
       state.refreshedAt = fresh.refreshedAt;
       state.source = "live";
@@ -111,7 +115,7 @@ function renderTabbar(): HTMLElement {
             render();
           }
         },
-        h("span", { class: "ico" }, tab.icon),
+        h("span", { class: "ico", html: ICONS[tab.id] }),
         h("span", {}, tab.label)
       )
     );
@@ -128,25 +132,27 @@ function render(): void {
 
   clear(app);
 
-  const now = Date.now();
   const ctx: ViewContext = {
     result: state.result ?? {},
     metas: state.metas,
-    now,
+    now: Date.now(),
     refreshedAt: state.refreshedAt,
     source: state.source,
     refreshing: state.refreshing,
-    error: state.error
+    error: state.error,
+    gameColors: state.gameColors,
+    expanded,
+    onToggle: (key: string) => {
+      if (expanded.has(key)) expanded.delete(key);
+      else expanded.add(key);
+      render();
+    }
   };
 
   app.append(renderTopbar(ctx, () => void refresh()));
 
   const main = h("main", { class: "view" });
-  if (!state.result) {
-    main.append(h("div", { class: "hint" }, "正在装载数据…"));
-  } else {
-    main.append(currentView(ctx));
-  }
+  main.append(state.result ? currentView(ctx) : h("div", { class: "empty" }, "正在装载数据…"));
   app.append(main);
   app.append(renderTabbar());
 
@@ -162,7 +168,9 @@ async function boot(): Promise<void> {
     state.error = `引擎初始化失败：${error instanceof Error ? error.message : String(error)}`;
   }
 
-  // 1) 优先用上次缓存（立即出图）
+  // 用户在各端设过的主题色（与桌面插件同一个键）
+  state.gameColors = await readGameColors(storage).catch(() => ({}));
+
   let painted = false;
   try {
     const cached = await engine.getCached();
@@ -173,10 +181,9 @@ async function boot(): Promise<void> {
       painted = true;
     }
   } catch {
-    /* 缓存坏了就忽略，下面用快照兜底 */
+    /* 缓存坏了就忽略 */
   }
 
-  // 2) 没有缓存则用内置快照
   if (!painted) {
     try {
       const snapshot = await loadSnapshot();
@@ -189,11 +196,8 @@ async function boot(): Promise<void> {
   }
 
   render();
-
-  // 3) 后台实时刷新（不阻塞首屏）
   void refresh();
 
-  // 4) 每 30 秒重画一次，让倒计时走动
   globalThis.setInterval(() => {
     if (!state.refreshing) render();
   }, 30_000);

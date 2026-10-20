@@ -6,12 +6,24 @@
 > 本仓库现在交付的是**可验证的共享核心层** + **浏览器预览**，
 > 还不是可以直接装到手机上的 App。为什么这样排期，见 [`docs/PLATFORM-DECISION.md`](docs/PLATFORM-DECISION.md)。
 
-![今天](docs/screenshots/01-today.png)
-![日程](docs/screenshots/02-schedule.png)
-![游戏](docs/screenshots/03-games.png)
-![数据健康](docs/screenshots/04-data-health.png)
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/01-today.png" width="200" /><br /><sub><b>今天</b> · 三段聚合</sub></td>
+    <td align="center"><img src="docs/screenshots/02-schedule.png" width="200" /><br /><sub><b>日程</b> · 按结束日</sub></td>
+    <td align="center"><img src="docs/screenshots/03-games.png" width="200" /><br /><sub><b>游戏</b> · 28 款状态</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/05-expanded.png" width="200" /><br /><sub><b>点按展开</b> · 同刻结束的明细</sub></td>
+    <td align="center"><img src="docs/screenshots/04-data-health.png" width="200" /><br /><sub><b>数据健康</b> · 失败与提醒</sub></td>
+    <td></td>
+  </tr>
+</table>
 
-上图是浏览器预览的实拍，数据为**真实抓取**（2026-10-20，28 款游戏、139 个事件）。
+以上均为浏览器预览实拍，数据是**真实抓取**的（2026-10-20，28 款游戏、139 个事件）。
+
+界面有一条与桌面端不同的核心规则：**按「游戏 + 同一结束时刻」归组**。
+实测同一款游戏常有 6–8 条活动在同一秒结束，逐条平铺会变成一堵重复的墙；
+归组后一张卡代表"这款游戏这批东西什么时候结束"，点开才展开明细。
 
 ---
 
@@ -37,7 +49,7 @@
 npm install
 
 npm run dev        # 打开 http://127.0.0.1:4321 （会先用内置快照渲染，再后台实时刷新）
-npm run check      # 类型检查 + 编译 + 62 个测试
+npm run check      # 类型检查 + 编译 + 68 个测试
 npm test           # 只跑测试
 ```
 
@@ -83,7 +95,7 @@ npm test           # 只跑测试
 | 时区换算 | 不依赖 `Intl`/ICU，纯固定偏移整数运算 |
 | 事件覆盖面 | 主事件 43 条 → **139–145 条**（`*Hover` 明细多抽出 96–102 条） |
 | 时钟依赖 | 全部显式传 `nowMs`，测试可完全复现 |
-| 测试 | 62 个，覆盖契约/往返/时区/分桶/提醒/格式 |
+| 测试 | 68 个，覆盖契约/往返/时区/分桶/提醒/格式/配置 |
 
 ---
 

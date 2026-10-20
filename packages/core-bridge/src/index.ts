@@ -18,5 +18,6 @@
 export * from "./http.ts";
 export * from "./transport.ts";
 export * from "./storage.ts";
+export * from "./settings.ts";
 export * from "./fetch-client.ts";
 export * from "./engine.ts";

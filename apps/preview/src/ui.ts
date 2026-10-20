@@ -9,6 +9,8 @@ export type Child = Node | string | number | null | undefined | false;
 export interface ElProps {
   class?: string;
   text?: string;
+  /** 仅用于**受信任的静态片段**（本项目只用来插内联 SVG 图标），不要放用户数据 */
+  html?: string;
   style?: Partial<CSSStyleDeclaration>;
   onClick?: (event: MouseEvent) => void;
   /** 其余字符串/数字属性直接 setAttribute；`data-*` / `aria-*` 也走这里 */
@@ -28,6 +30,8 @@ export function h<K extends keyof HTMLElementTagNameMap>(
       el.className = String(value);
     } else if (key === "text") {
       el.textContent = String(value);
+    } else if (key === "html") {
+      el.innerHTML = String(value);
     } else if (key === "style" && typeof value === "object") {
       Object.assign(el.style, value as Partial<CSSStyleDeclaration>);
     } else if (key === "onClick" && typeof value === "function") {
