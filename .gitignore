@@ -27,3 +27,6 @@ pnpm-debug.log*
 # 本机临时
 _tmp/
 *.tmp
+
+# 临时文件（提交信息草稿等）
+_*.txt
