@@ -26,6 +26,7 @@ import {
   type ScheduleEvent
 } from "../../../packages/schedule/src/index.ts";
 import { ICONS, gameColor } from "./theme.ts";
+import { PLATFORM_ORDER, PLATFORMS, type Platform } from "./design.ts";
 import { h, type Child } from "./ui.ts";
 
 export interface ViewContext {
@@ -39,6 +40,8 @@ export interface ViewContext {
   gameColors: Record<string, string>;
   expanded: Set<string>;
   onToggle: (key: string) => void;
+  platform: Platform;
+  onPlatform: (platform: Platform) => void;
 }
 
 const HOUR = 3_600_000;
@@ -387,6 +390,56 @@ export function renderData(ctx: ViewContext): HTMLElement {
   if (reminders.length === 0) remBox.append(h("div", { class: "empty" }, "未来 7 天内没有需要提醒的分钟精度事件。"));
   wrap.append(remBox);
 
+  // ── 界面规范对照（这一个是预览用的控件，不是产品功能）──
+  const spec = PLATFORMS[ctx.platform];
+  const platSection = h(
+    "section",
+    { class: "section" },
+    h(
+      "div",
+      { class: "sec-head" },
+      h("span", { class: "sec-mark" }),
+      h("h2", { class: "sec-title" }, "界面规范"),
+      h("span", { class: "sec-count" }, spec.unitNote),
+      h("span", { class: "sec-rule" })
+    )
+  );
+
+  const grid = h("div", { class: "plat-grid" });
+  for (const platform of PLATFORM_ORDER) {
+    const ps = PLATFORMS[platform];
+    grid.append(
+      h(
+        "button",
+        { class: `plat-btn ${platform === ctx.platform ? "active" : ""}`, onClick: () => ctx.onPlatform(platform) },
+        ps.label,
+        h("small", {}, ps.unitNote)
+      )
+    );
+  }
+  platSection.append(grid);
+  platSection.append(
+    h("div", { class: "note" }, "同一份数据按三端官方规范渲染。真实 App 跟随系统自动选择，这里是规范对照。")
+  );
+
+  const table = h("dl", { class: "spec-table" });
+  const rows: Array<[string, string]> = [
+    ["卡片标题", `${spec.type.cardTitle.size} / ${spec.type.cardTitle.lineHeight} / w${spec.type.cardTitle.weight}`],
+    ["次要文本", `${spec.type.gameName.size}`],
+    ["倒计时", `${spec.type.remain.size} / w${spec.type.remain.weight}`],
+    ["底部标签", `${spec.type.tabLabel.size}`],
+    ["卡片圆角", `${spec.metric.cardRadius}`],
+    ["卡片间距", `${spec.metric.cardGap}`],
+    ["底部导航", `${spec.metric.tabbarHeight}${spec.metric.tabbarInset > 0 ? " · 悬浮胶囊" : ""}`],
+    ["触控目标", `${spec.metric.touchMin}`]
+  ];
+  for (const [key, value] of rows) {
+    table.append(h("dt", {}, key));
+    table.append(h("dd", {}, value));
+  }
+  platSection.append(table);
+  wrap.append(platSection);
+
   return wrap;
 }
 
@@ -398,11 +451,28 @@ function kv(key: string, value: string): HTMLElement {
   return h("div", { class: "kv" }, h("span", { class: "kv-k" }, key), h("span", { class: "kv-v" }, value));
 }
 
+/** 顶栏上的平台切换按钮（短名，因为只有一格的宽度） */
+const PLATFORM_SHORT: Record<Platform, string> = { ios: "iOS", material: "M3", harmony: "鸿蒙" };
+
 export function renderTopbar(ctx: ViewContext, onRefresh: () => void): HTMLElement {
   const button = h(
     "button",
     { class: `icon-btn ${ctx.refreshing ? "spinning" : ""}`, onClick: onRefresh, ...(ctx.refreshing ? { disabled: "disabled" } : {}), "aria-label": "刷新" },
     h("span", { class: "ico", html: ICONS.refresh })
+  );
+
+  /** 在三种官方规范之间轮换 —— 真实 App 会跟随系统，这里是为了对照 */
+  const platIndex = PLATFORM_ORDER.indexOf(ctx.platform);
+  const nextPlatform = PLATFORM_ORDER[(platIndex + 1) % PLATFORM_ORDER.length]!;
+  const platButton = h(
+    "button",
+    {
+      class: "icon-btn",
+      onClick: () => ctx.onPlatform(nextPlatform),
+      title: `当前按 ${PLATFORMS[ctx.platform].label} 规范渲染，点击切换到 ${PLATFORMS[nextPlatform].label}`,
+      "aria-label": "切换平台设计规范"
+    },
+    PLATFORM_SHORT[ctx.platform]
   );
 
   const meta = h(
@@ -422,6 +492,7 @@ export function renderTopbar(ctx: ViewContext, onRefresh: () => void): HTMLEleme
       "div",
       { class: "topbar-row" },
       h("div", { class: "brand" }, "二游日历", h("span", { class: "tag" }, "预览")),
+      platButton,
       button
     ),
     meta,

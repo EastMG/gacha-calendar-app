@@ -1,0 +1,29 @@
+feat(design): 按 Apple / Google / 华为三份官方规范重做视觉 token
+
+调研三家官方设计文档，把可落地的数值抽成 token，并做成三端皮肤可切换对照。
+三家文档都不好抓，取源方式与可信度分级都写进了 docs/DESIGN.md。
+
+取源要点：
+- Apple HIG 页面是 JS 渲染，URL 后加 .md 可取官方 Markdown 源文。
+  重要发现：现行 HIG 已把组件尺寸规格移出正文（tab bar 高度、列表行高、
+  圆角档位、动效时长都随 iOS 27 UI Kit 下发），这些一律标为「工程决定」，
+  没有冒充 Apple 规范。另外流传的「iOS 8pt 栅格」并不在 HIG 里。
+- Material 3 全站 JS 渲染，改用 r.jina.ai 取正文 + Google 官方 token 仓库
+  取精确 dp/sp。间距基准是 8dp 不是 4dp。
+  nav bar 官方自相矛盾（token 80dp / Expressive 推荐 64dp），本实现取 64。
+- HarmonyOS 是 SPA 空壳，用 r.jina.ai + openharmony/docs 原始 Markdown 取数。
+  关键差异：深色用明度表达层级（不靠投影）、正文对比 >5:1 且不得 >17.6:1、
+  卡片圆角 16、卡片间距 12、底部导航是悬浮胶囊。
+
+落地：
+- apps/preview/src/design.ts：共享底座 + 三端皮肤 token（颜色/字号/圆角/导航/触控）
+- 三端真实差异（浏览器实测）：底部导航 58 / 64 / 56 悬浮胶囊，
+  卡片圆角 12 / 12 / 16，卡片标题 17 / 16 / 16，触控目标 44 / 48 / 48
+- 修掉对照出的违规：刷新按钮 34→44/48、左右边距 12→16、正文 14→16~17、
+  倒计时补 tabular-nums + 定宽容器（Apple：SF Pro 默认比例数字，必然抖动）、
+  暗色次要文本提到 ≥5:1（鸿蒙要求正文 >5:1）
+- apps/preview/test/design.test.ts：28 条断言把官方阈值固化
+  （对比度阶梯、层级单调、触控目标、字号下限、皮肤必须有真差异）
+- docs/DESIGN.md：三家取值表 + 共同点/差异 + 「官方没规定」清单 + 修复记录
+
+门禁：96 个测试全绿。

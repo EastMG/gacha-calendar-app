@@ -25,6 +25,22 @@
 实测同一款游戏常有 6–8 条活动在同一秒结束，逐条平铺会变成一堵重复的墙；
 归组后一张卡代表"这款游戏这批东西什么时候结束"，点开才展开明细。
 
+### 同一屏，按三端官方规范渲染
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/01-today.png" width="200" /><br /><sub><b>iOS</b> · 17pt 标题 · 44 触控</sub></td>
+    <td align="center"><img src="docs/screenshots/06-material3.png" width="200" /><br /><sub><b>Material 3</b> · 64 导航 · 胶囊指示器</sub></td>
+    <td align="center"><img src="docs/screenshots/07-harmonyos.png" width="200" /><br /><sub><b>鸿蒙</b> · 16 圆角 · 悬浮胶囊导航</sub></td>
+  </tr>
+</table>
+
+这些不是只换了配色：字号体系、卡片圆角（12 / 12 / **16**）、卡片间距、底部导航
+（58 全宽 / **64** 全宽 + 56×32 指示器 / **56 悬浮胶囊**）、触控目标（44 / 48 / 48）
+都按各自官方规范取值，逐项可在 [`docs/DESIGN.md`](docs/DESIGN.md) 追到出处。
+数值不是靠眼睛调的 —— `apps/preview/test/design.test.ts` 把**对比度、触控目标、字号下限**
+写成断言（28 条），改配色时跌破规范会直接测试失败。
+
 ---
 
 ## 这是什么
@@ -49,7 +65,7 @@
 npm install
 
 npm run dev        # 打开 http://127.0.0.1:4321 （会先用内置快照渲染，再后台实时刷新）
-npm run check      # 类型检查 + 编译 + 68 个测试
+npm run check      # 类型检查 + 编译 + 96 个测试
 npm test           # 只跑测试
 ```
 
@@ -95,7 +111,7 @@ npm test           # 只跑测试
 | 时区换算 | 不依赖 `Intl`/ICU，纯固定偏移整数运算 |
 | 事件覆盖面 | 主事件 43 条 → **139–145 条**（`*Hover` 明细多抽出 96–102 条） |
 | 时钟依赖 | 全部显式传 `nowMs`，测试可完全复现 |
-| 测试 | 68 个，覆盖契约/往返/时区/分桶/提醒/格式/配置 |
+| 测试 | 96 个，覆盖契约/往返/时区/分桶/提醒/格式/配置/设计规范 |
 
 ---
 
@@ -162,6 +178,7 @@ core 内部用 `Intl.DateTimeFormat({ timeZone })`。这在 Node/浏览器没问
 
 ## 文档
 
+- [`docs/DESIGN.md`](docs/DESIGN.md) —— 三端官方规范取值、共享底座与皮肤差异、符合性断言
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) —— 分层、数据流、为什么这样切
 - [`docs/DATA-MODEL.md`](docs/DATA-MODEL.md) —— `ScheduleEvent` 模型、时区表、年份推断、实测数字
 - [`docs/PLATFORM-DECISION.md`](docs/PLATFORM-DECISION.md) —— 三端壳选型调研与待决事项

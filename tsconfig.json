@@ -16,10 +16,10 @@
     "resolveJsonModule": true,
     "noEmit": true,
     "types": ["node"],
-    /* 允许在 import 里写 .ts 后缀（浏览器/node 都能直接解析），
-       配合 rewriteRelativeImportExtensions 让编译产物把 .ts 改写成 .js */
+    /* 鍏佽鍦?import 閲屽啓 .ts 鍚庣紑锛堟祻瑙堝櫒/node 閮借兘鐩存帴瑙ｆ瀽锛夛紝
+       閰嶅悎 rewriteRelativeImportExtensions 璁╃紪璇戜骇鐗╂妸 .ts 鏀瑰啓鎴?.js */
     "allowImportingTsExtensions": true,
     "rewriteRelativeImportExtensions": true
   },
-  "include": ["packages/*/src/**/*.ts", "packages/*/test/**/*.ts", "apps/preview/src/**/*.ts"]
+  "include": ["packages/*/src/**/*.ts", "packages/*/test/**/*.ts", "apps/preview/src/**/*.ts", "apps/preview/test/**/*.ts"]
 }

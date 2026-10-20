@@ -11,6 +11,7 @@ import {
 } from "../../../packages/core-bridge/src/index.ts";
 import type { GameMetaLike, ResultLike } from "../../../packages/schedule/src/index.ts";
 import { createProxyHttpClient } from "./http-browser.ts";
+import { applyTheme, PLATFORM_ORDER, type Platform } from "./design.ts";
 import { ICONS } from "./theme.ts";
 import { clear, h } from "./ui.ts";
 import { renderCalendar, renderData, renderGames, renderToday, renderTopbar, type ViewContext } from "./views.ts";
@@ -24,6 +25,14 @@ const TABS: Array<{ id: Tab; label: string }> = [
   { id: "data", label: "数据" }
 ];
 
+/** 平台皮肤的选择只属于预览（真实 App 跟随系统），因此走独立键而不是 core 的配置键 */
+const PLATFORM_KEY = "preview.platform";
+
+function readPlatform(): Platform {
+  const stored = globalThis.localStorage?.getItem(PLATFORM_KEY);
+  return PLATFORM_ORDER.includes(stored as Platform) ? (stored as Platform) : "ios";
+}
+
 interface AppState {
   tab: Tab;
   result: ResultLike | null;
@@ -33,6 +42,7 @@ interface AppState {
   refreshing: boolean;
   error: string | null;
   gameColors: Record<string, string>;
+  platform: Platform;
 }
 
 const state: AppState = {
@@ -43,7 +53,8 @@ const state: AppState = {
   refreshedAt: null,
   refreshing: false,
   error: null,
-  gameColors: {}
+  gameColors: {},
+  platform: readPlatform()
 };
 
 /** 展开状态单独存：30 秒重画一次时不希望用户刚展开的卡又收回去 */
@@ -131,6 +142,8 @@ function render(): void {
   if (previousView) scrollMemory.set(state.tab, previousView.scrollTop);
 
   clear(app);
+  // 先注入设计 token（颜色/字号/圆角/间距），CSS 只负责结构
+  applyTheme(app, state.platform);
 
   const ctx: ViewContext = {
     result: state.result ?? {},
@@ -145,6 +158,13 @@ function render(): void {
     onToggle: (key: string) => {
       if (expanded.has(key)) expanded.delete(key);
       else expanded.add(key);
+      render();
+    },
+    platform: state.platform,
+    onPlatform: (platform: Platform) => {
+      if (state.platform === platform) return;
+      state.platform = platform;
+      globalThis.localStorage?.setItem(PLATFORM_KEY, platform);
       render();
     }
   };
