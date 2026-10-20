@@ -1,0 +1,61 @@
+name: deploy-pages
+
+# PWA 的"实时性"由这个工作流保证：
+# 浏览器受 CORS 约束，静态站点无法直连 28 个源站；
+# 于是把抓取放在 CI 里（Node 没有 CORS），定时重新部署。
+on:
+  push:
+    branches: [main]
+  schedule:
+    # 每 6 小时抓一次。游戏公告不是秒级信息，6 小时足够；再密会浪费 Actions 额度。
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: 构建 PWA
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 门禁（类型检查 + 测试）
+        run: npm run typecheck && npm test
+
+      - name: 抓取最新数据
+        # 抓不到足够数据时会保留仓库里已提交的快照并以 0 退出，不会让部署失败
+        run: npm run data:refresh
+
+      - name: 构建产物
+        run: npm run build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: 部署到 Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

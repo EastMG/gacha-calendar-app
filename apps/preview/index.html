@@ -4,8 +4,21 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="dark" />
-    <title>二游日历 · 预览</title>
-    <link rel="stylesheet" href="/apps/preview/styles.css" />
+    <title>二游日历</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <meta name="theme-color" content="#0F1113" />
+    <link rel="icon" href="./icons/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="./icons/icon-180.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="二游日历" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="description" content="二次元手游卡池与活动排期日历：28 款游戏的当期卡池、活动起止与倒计时。" />
+
+    <link rel="stylesheet" href="./styles.css" />
+
     <!--
       core 是 ESM 单文件、零依赖。这里用 import map 把裸包名指到实际文件，
       因此**不需要任何打包器**即可在浏览器里跑起来。
@@ -13,13 +26,13 @@
     <script type="importmap">
       {
         "imports": {
-          "gacha-calendar-core": "/vendor/core.mjs"
+          "gacha-calendar-core": "./vendor/core.mjs"
         }
       }
     </script>
   </head>
   <body>
     <div id="app" class="app"></div>
-    <script type="module" src="/build/apps/preview/src/main.js"></script>
+    <script type="module" src="./build/apps/preview/src/main.js"></script>
   </body>
 </html>

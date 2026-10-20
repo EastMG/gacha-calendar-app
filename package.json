@@ -17,11 +17,13 @@
     "node": ">=22.6"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "dev": "node tools/preview-server.mjs",
+    "dev:dist": "node tools/preview-server.mjs --dist",
+    "build": "node tools/build-pwa.mjs",
+    "data:refresh": "node tools/refresh-data.mjs",
+    "icons": "python tools/make-icons.py",
     "typecheck": "tsc --noEmit",
     "test": "node --test --test-isolation=none",
-    "dev": "node tools/preview-server.mjs",
-    "preview": "npm run build && npm run dev",
     "check": "npm run typecheck && npm run build && npm run test"
   },
   "dependencies": {

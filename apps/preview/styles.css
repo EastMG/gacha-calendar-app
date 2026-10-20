@@ -775,6 +775,25 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* 安装到桌面等一次性动作 */
+.action-btn {
+  width: 100%;
+  min-height: var(--m-touch-min);
+  margin-top: 10px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-text);
+  background: var(--c-accent-soft);
+  border: 1px solid color-mix(in srgb, var(--c-accent) 50%, transparent);
+  border-radius: max(8px, calc(var(--m-card-radius) - 4px));
+  cursor: pointer;
+  transition: background var(--m-motion-fast) ease;
+}
+.action-btn:hover {
+  background: color-mix(in srgb, var(--c-accent) 24%, transparent);
+}
+
 /* ── 底部导航 ─────────────────────────────────────────── */
 .tabbar {
   flex: none;

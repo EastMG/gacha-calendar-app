@@ -1,10 +1,20 @@
 # 二游日历 · App（gacha-calendar-app）
 
-二次元手游的**卡池 / 活动排期**移动端 App，目标覆盖 **Android / iOS / HarmonyOS** 三端。
+二次元手游的**卡池 / 活动排期**工具，目标覆盖 **Android / iOS / HarmonyOS** 三端。
 
-> **当前阶段：地基已就绪，三端壳待定。**
-> 本仓库现在交付的是**可验证的共享核心层** + **浏览器预览**，
-> 还不是可以直接装到手机上的 App。为什么这样排期，见 [`docs/PLATFORM-DECISION.md`](docs/PLATFORM-DECISION.md)。
+> **当前阶段：PWA 已可安装使用，三端原生壳待定。**
+> 仓库交付的是**可验证的共享核心层** + **一个能装到桌面的 PWA**；
+> 原生 App 的壳还没选型，见 [`docs/PLATFORM-DECISION.md`](docs/PLATFORM-DECISION.md)。
+
+## 在线使用 / 安装
+
+**https://eastmg.github.io/gacha-calendar-app/**
+
+- 手机浏览器打开 → 「添加到主屏幕」，即以独立窗口运行，**支持离线**
+- 桌面 Chrome / Edge → 地址栏右侧「安装」
+
+数据由 GitHub Actions **每 6 小时**抓一轮后重新部署 —— 浏览器受 CORS 限制无法直连 28 个源站，
+所以把抓取放在 CI（Node 没有 CORS），用重新部署换取"零服务端 + 近实时"。
 
 <table>
   <tr>
@@ -15,7 +25,7 @@
   <tr>
     <td align="center"><img src="docs/screenshots/05-expanded.png" width="200" /><br /><sub><b>点按展开</b> · 同刻结束的明细</sub></td>
     <td align="center"><img src="docs/screenshots/04-data-health.png" width="200" /><br /><sub><b>数据健康</b> · 失败与提醒</sub></td>
-    <td></td>
+    <td align="center"><img src="docs/screenshots/08-pwa.png" width="200" /><br /><sub><b>PWA</b> · 安装 / 数据来源</sub></td>
   </tr>
 </table>
 
@@ -51,7 +61,7 @@
 |---|---|---|
 | [`dsh-gacha-calendar`](https://github.com/EastMG/dsh-gacha-calendar) | DeepSeek Harness 桌面插件（28 款，**core 的真源**） | 已发布 |
 | [`gacha-calendar-extension`](https://github.com/EastMG/gacha-calendar-extension) | Chrome / Edge MV3 扩展（11 款） | 已发布 |
-| **本仓库** | Android / iOS / HarmonyOS App | **地基阶段** |
+| **本仓库** | PWA（已可安装）+ 未来的 Android / iOS / HarmonyOS App | **PWA 已上线** |
 
 三者共用同一个抓取核心 [`gacha-calendar-core`](https://www.npmjs.com/package/gacha-calendar-core)
 （零依赖、零宿主依赖，`createEngine({ transport, storage, now })`）。
@@ -64,9 +74,13 @@
 ```bash
 npm install
 
-npm run dev        # 打开 http://127.0.0.1:4321 （会先用内置快照渲染，再后台实时刷新）
-npm run check      # 类型检查 + 编译 + 96 个测试
-npm test           # 只跑测试
+npm run dev         # 开发：http://127.0.0.1:4321 （快照先出图，再后台实时刷新）
+npm run data:refresh # 抓一轮数据写入 apps/preview/data/latest.json
+npm run build       # 生成静态 PWA 到 dist/
+npm run dev:dist    # 产物模式：http://127.0.0.1:4322 （可验 Service Worker 与离线）
+npm run icons       # 重新生成图标（需 Pillow）
+npm run check       # 类型检查 + 构建 + 108 个测试
+npm test            # 只跑测试
 ```
 
 要求 Node ≥ 22.6（用到内置 TypeScript 类型擦除，测试无需构建步骤）。
@@ -111,7 +125,7 @@ npm test           # 只跑测试
 | 时区换算 | 不依赖 `Intl`/ICU，纯固定偏移整数运算 |
 | 事件覆盖面 | 主事件 43 条 → **139–145 条**（`*Hover` 明细多抽出 96–102 条） |
 | 时钟依赖 | 全部显式传 `nowMs`，测试可完全复现 |
-| 测试 | 96 个，覆盖契约/往返/时区/分桶/提醒/格式/配置/设计规范 |
+| 测试 | 108 个，覆盖契约/往返/时区/分桶/提醒/格式/配置/设计规范/PWA |
 
 ---
 

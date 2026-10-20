@@ -30,8 +30,8 @@ npm run check
 包含三步，缺一不可：
 
 1. `npm run typecheck` —— `tsc --noEmit`，零错误
-2. `npm run build` —— 编译到 `build/`（预览依赖它）
-3. `npm test` —— `node --test --test-isolation=none`，当前 **96 通过 / 0 失败**
+2. `npm run build` —— 生成静态 PWA 到 `dist/`（`tools/build-pwa.mjs`：tsc + 拷资源 + 生成 sw.js）
+3. `npm test` —— `node --test --test-isolation=none`，当前 **108 通过 / 0 失败**
 
 > `--test-isolation=none` 不是随意加的：默认隔离模式会为每个测试文件起子进程，
 > 在受限环境（如沙箱）里会 `spawn EPERM`。进程内跑既快又不依赖子进程权限。
@@ -67,6 +67,14 @@ npm run check
 
 8. **官方文档没规定的数值，必须在 `docs/DESIGN.md` 里标成「工程决定」。**
    不要把工程取舍写成"某家规范要求"。
+
+9. **`dist/` 不入库，`apps/preview/data/latest.json` 入库。**
+   前者由 CI 构建；后者是 PWA 的**兜底数据**（CI 抓取失败时仍能部署出有内容的站点）。
+   刷新它就是 `npm run data:refresh`，并在 commit message 里写明抓取时间。
+
+10. **改 PWA 的 manifest / sw / index.html 后必须跑测试。**
+    `apps/preview/test/pwa.test.ts` 会挡住：字段缺失导致装不上、图标路径错、
+    用了绝对路径（部署到子路径会全 404）、SW 占位符重复导致脚本语法错误。
 
 ## 提交信息
 

@@ -34,6 +34,8 @@ export interface ViewContext {
   metas: GameMetaLike[];
   now: number;
   refreshedAt: number | null;
+  /** 快照的生成时刻（CI 抓取时间）；实时模式下为 null */
+  snapshotGeneratedAt: number | null;
   source: "live" | "snapshot";
   refreshing: boolean;
   error: string | null;
@@ -42,6 +44,11 @@ export interface ViewContext {
   onToggle: (key: string) => void;
   platform: Platform;
   onPlatform: (platform: Platform) => void;
+  /** 只有本地开发服务器才有抓取代理 */
+  canLiveRefresh: boolean;
+  canInstall: boolean;
+  installed: boolean;
+  onInstall: () => void;
 }
 
 const HOUR = 3_600_000;
@@ -440,6 +447,33 @@ export function renderData(ctx: ViewContext): HTMLElement {
   platSection.append(table);
   wrap.append(platSection);
 
+  // ── 应用形态（PWA 安装 / 数据来源）──
+  const appSection = h(
+    "section",
+    { class: "section" },
+    h(
+      "div",
+      { class: "sec-head" },
+      h("span", { class: "sec-mark" }),
+      h("h2", { class: "sec-title" }, "应用"),
+      h("span", { class: "sec-rule" })
+    )
+  );
+  appSection.append(
+    kv("运行形态", ctx.installed ? "独立窗口（已安装）" : "浏览器标签页"),
+    kv("数据更新", ctx.canLiveRefresh ? "打开时实时抓取" : "由 CI 定时刷新后重新部署"),
+    kv("快照生成", ctx.snapshotGeneratedAt ? formatRelative(ctx.snapshotGeneratedAt, ctx.now) : "—")
+  );
+  if (ctx.canInstall) {
+    appSection.append(
+      h("button", { class: "action-btn", onClick: ctx.onInstall }, "安装到桌面")
+    );
+    appSection.append(
+      h("div", { class: "note" }, "装到桌面后以独立窗口打开，支持离线查看上次数据。")
+    );
+  }
+  wrap.append(appSection);
+
   return wrap;
 }
 
@@ -455,11 +489,18 @@ function kv(key: string, value: string): HTMLElement {
 const PLATFORM_SHORT: Record<Platform, string> = { ios: "iOS", material: "M3", harmony: "鸿蒙" };
 
 export function renderTopbar(ctx: ViewContext, onRefresh: () => void): HTMLElement {
-  const button = h(
-    "button",
-    { class: `icon-btn ${ctx.refreshing ? "spinning" : ""}`, onClick: onRefresh, ...(ctx.refreshing ? { disabled: "disabled" } : {}), "aria-label": "刷新" },
-    h("span", { class: "ico", html: ICONS.refresh })
-  );
+  const refreshButton = ctx.canLiveRefresh
+    ? h(
+        "button",
+        {
+          class: `icon-btn ${ctx.refreshing ? "spinning" : ""}`,
+          onClick: onRefresh,
+          ...(ctx.refreshing ? { disabled: "disabled" } : {}),
+          "aria-label": "刷新"
+        },
+        h("span", { class: "ico", html: ICONS.refresh })
+      )
+    : null;
 
   /** 在三种官方规范之间轮换 —— 真实 App 会跟随系统，这里是为了对照 */
   const platIndex = PLATFORM_ORDER.indexOf(ctx.platform);
@@ -493,7 +534,7 @@ export function renderTopbar(ctx: ViewContext, onRefresh: () => void): HTMLEleme
       { class: "topbar-row" },
       h("div", { class: "brand" }, "二游日历", h("span", { class: "tag" }, "预览")),
       platButton,
-      button
+      refreshButton
     ),
     meta,
     ctx.error ? h("div", { class: "banner-tip error" }, ctx.error) : null
