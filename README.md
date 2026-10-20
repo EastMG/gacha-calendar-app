@@ -180,13 +180,18 @@ core 内部用 `Intl.DateTimeFormat({ timeZone })`。这在 Node/浏览器没问
 
 | 平台 | 状态 | 说明 |
 |---|---|---|
-| 浏览器（预览 / PWA） | ✅ 可运行 | 本仓库当前形态 |
+| 浏览器（预览 / PWA） | ✅ 已上线 | https://eastmg.github.io/gacha-calendar-app/ |
 | Android | ⏳ 待定壳 | 需 JDK 17 + Android SDK |
 | iOS | ⏳ 待定壳 | 需 macOS + Xcode |
 | HarmonyOS NEXT | ⏳ 待定壳 | 需 DevEco Studio |
+| **Android 电视（遥控器）** | 📋 待办 | **大陆 AOSP 盒子，不是 Google Android TV**：无 GMS、走当贝/沙发管家分发、遥控器焦点交互；见 [ROADMAP Phase 7](docs/ROADMAP.md) |
 
 选型调研已完成，推荐与技术依据见 [`docs/PLATFORM-DECISION.md`](docs/PLATFORM-DECISION.md)
 （结论：RN 0.82 + RNOH 为主方案，Capacitor + 鸿蒙壳为备选；**本阶段不锁定**）。
+
+> 电视端与手机端不是同一个问题：**没有触摸、三米外看、没有官方设计规范**。
+> 它的工程量主要在焦点系统，而不是"把界面放大"。边界与清单见
+> [`docs/ROADMAP.md` Phase 7](docs/ROADMAP.md)。
 
 ---
 
